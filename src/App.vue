@@ -1,35 +1,47 @@
 <template>
-  <svg width="100%" height="100%" viewBox="0 0 400 400">
-    <line x1="49%" y1="12%" x2="49%" :y2="2 + 10 * (count + 1) + '%'" />
-    <line x1="35%" y1="12%" x2="35%" :y2="2 + 10 * (count + 1) + '%'" />
-    <line x1="63%" y1="12%" x2="63%" :y2="2 + 10 * (count + 1) + '%'" />
-    <line x1="2.4%" y1="2%" x2="2.4%" :y2="2 + 10 * (count + 1) + '%'" />
-    <line x1="97.6%" y1="2%" x2="97.6%" :y2="2 + 10 * (count + 1) + '%'" />
-    <rect x="3.5%" y="3.5%" width="7%" height="7%" class="whiter" />
-    <rect x="89.2%" y="3.5%" width="7%" height="7%" class="redr" />
+  <div class="nav">
+    <span>
+      <a @click="smenu('pool')">New Pool Competition</a>
+      <a @click="smenu('team')">New Team Competition</a>
+      <a @click="smenu('settings')">Setings</a>
+      <a @click="print()">Print</a>   
+    </span> 
+  </div>
+  <svg :height="windowHeight-5" width="100%" >
+    <line x1="49%" y1="15.9%" x2="49%" :y2="2.4 + yStep * (count + 1) + '%'" />
+    <line x1="35%" y1="15.9%" x2="35%" :y2="2.4 + yStep * (count + 1) + '%'" />
+    <line x1="63%" y1="15.9%" x2="63%" :y2="2.4 + yStep * (count + 1) + '%'" />
+    <line x1="2.3%" y1="1.5%" x2="2.3%" :y2="2.4 + yStep * (count + 1) + '%'" />
+    <line x1="97.8%" y1="1.5%" x2="97.8%" :y2="2.4 + yStep * (count + 1) + '%'" />
+    <rect x="3.5%" y="3.5%"  class="whiter" />
+    <rect x="89.2%" y="3.5%" class="redr" />
     <text
-      x="12%"
-      y="8%"
+    x="49%"
+    y="10%"
+    text-anchor="middle"
+    class="title_top"
+    >{{ players.title.top }}</text>
+    <text
+      x="11%"
+      y="10%"
+      class="title_white"
       text-anchor="start"
-      font-weight="bolder"
-      font-size="0.7em"
     >
-      {{ whiteTitle }}
+      {{ players.title.white }}
     </text>
     <text
-      x="88%"
-      y="8%"
+      x="88.5%"
+      y="10%"
+      class="title_red"
       text-anchor="end"
-      font-weight="bolder"
-      font-size="0.7em"
     >
-      {{ redTitle }}
+      {{ players.title.red }}
     </text>
     <line
       v-for="ind in count + 2"
       x1="2%"
-      :y1="2 + 10 * (ind - 1) + '%'"
-      :y2="2 + 10 * (ind - 1) + '%'"
+      :y1="2 + yStep * (ind - 1) + '%'"
+      :y2="2 + yStep * (ind - 1) + '%'"
       :key="ind"
       x2="98%"
     />
@@ -38,7 +50,7 @@
       v-for="(p, ind) in players.red"
       :key="ind"
       x="96%"
-      :y="8 + 10 * (ind + 1) + '%'"
+      :y="10 + yStep * (ind + 1) + '%'"
       text-anchor="end"
       font-weight="normal"
       font-size="0.7em"
@@ -51,7 +63,7 @@
       v-for="(p, ind) in players.white"
       :key="ind"
       x="4%"
-      :y="8 + 10 * (ind + 1) + '%'"
+      :y="10 + yStep * (ind + 1) + '%'"
       text-anchor="start"
       font-weight="normal"
       font-size="0.7em"
@@ -61,145 +73,223 @@
       {{ p.name }}
     </text>
 
-    <image
+    <text
+      v-for="num of count"
+      :key="num"
+      x="49%"
+      :y="4 + yStep * (num) + '%'"
+      text-anchor="middle"
+      font-weight="normal"
+      font-size="0.7em"
+      fill="white"
+    >
+      {{ num }}
+    </text>
+
+    <image class="ippon"
       v-for="(p, ind) in players.white"
       :key="ind"
       v-show="show('white', ind, 'ippon', 0)!==false"
-      width="3%"
-      height="3%"
       x="36%"
-      :y="3 + 10 * (ind + 1) + '%'"
+      :y="3 + yStep * (ind + 1) + '%'"
       :xlink:href="show('white', ind, 'ippon', 0)"
     />
-    <image
+    <image class="ippon"
       v-for="(p, ind) in players.white"
       :key="ind"
       v-show="show('white', ind, 'ippon', 1)!==false"
-      width="3%"
-      height="3%"
       x="36%"
-      :y="7 + 10 * (ind + 1) + '%'"
+      :y="8 + yStep * (ind + 1) + '%'"
       :xlink:href="show('white', ind, 'ippon', 1)"
     />
-    <image
+    <image class="hansoku"
       v-for="(p, ind) in players.white"
       :key="ind"
       v-show="show('white', ind, 'hansoku', 0)!==false"
-      width="3%"
-      height="3%"
       x="40%"
-      :y="3 + 10 * (ind + 1) + '%'"
+      :y="3 + yStep * (ind + 1) + '%'"
       :xlink:href="figure.hansoku"
     />
-    <image
+    <image class="hansoku"
       v-for="(p, ind) in players.white"
       :key="ind"
       v-show="show('white', ind, 'hansoku', 1)!==false"
-      width="3%"
-      height="3%"
       x="40%"
-      :y="7 + 10 * (ind + 1) + '%'"
+      :y="8 + yStep * (ind + 1) + '%'"
       :xlink:href="figure.hansoku"
     />
-    <image
+    <image class="hansoku"
       v-for="(p, ind) in players.white"
       :key="ind"
       v-show="show('white', ind, 'hansoku', 2)!==false"
-      width="3%"
-      height="3%"
       x="44%"
-      :y="3 + 10 * (ind + 1) + '%'"
+      :y="3 + yStep * (ind + 1) + '%'"
       :xlink:href="figure.hansoku"
     />
-    <image
+    <image class="hansoku"
       v-for="(p, ind) in players.white"
       :key="ind"
       v-show="show('white', ind, 'hansoku', 3)!==false"
-      width="3%"
-      height="3%"
       x="44%"
-      :y="7 + 10 * (ind + 1) + '%'"
+      :y="8 + yStep * (ind + 1) + '%'"
       :xlink:href="figure.hansoku"
     />
 
-    <image
+    <image class="ippon"
       v-for="(p, ind) in players.red"
       :key="ind"
       v-show="show('red', ind, 'ippon', 0)"
-      width="3%"
-      height="3%"
-      x="59%"
-      :y="3 + 10 * (ind + 1) + '%'"
+      x="58.5%"
+      :y="3 + yStep * (ind + 1) + '%'"
       :xlink:href="show('red', ind, 'ippon', 0)"
     />
-    <image
+    <image class="ippon"
       v-for="(p, ind) in players.red"
       :key="ind"
       v-show="show('red', ind, 'ippon', 1)"
-      width="3%"
-      height="3%"
-      x="59%"
-      :y="7 + 10 * (ind + 1) + '%'"
+      x="58.5%"
+      :y="8 + yStep * (ind + 1) + '%'"
       :xlink:href="show('red', ind, 'ippon', 1)"
     />
-    <image
+    <image class="hansoku"
       v-for="(p, ind) in players.red"
       :key="ind"
       v-show="show('red', ind, 'hansoku', 0)"
-      width="3%"
-      height="3%"
       x="55%"
-      :y="3 + 10 * (ind + 1) + '%'"
+      :y="3 + yStep * (ind + 1) + '%'"
       :xlink:href="figure.hansoku"
     />
-    <image
+    <image class="hansoku"
       v-for="(p, ind) in players.red"
       :key="ind"
       v-show="show('red', ind, 'hansoku', 1)"
-      width="3%"
-      height="3%"
       x="55%"
-      :y="7 + 10 * (ind + 1) + '%'"
+      :y="8 + yStep * (ind + 1) + '%'"
       :xlink:href="figure.hansoku"
     />
-    <image
+    <image class="hansoku"
       v-for="(p, ind) in players.red"
       :key="ind"
       v-show="show('red', ind, 'hansoku', 2)"
-      width="3%"
-      height="3%"
       x="51%"
-      :y="3 + 10 * (ind + 1) + '%'"
+      :y="3 + yStep * (ind + 1) + '%'"
       :xlink:href="figure.hansoku"
     />
-    <image
+    <image class="hansoku"
       v-for="(p, ind) in players.red"
       :key="ind"
       v-show="show('red', ind, 'hansoku', 3)"
-      width="3%"
-      height="3%"
       x="51%"
-      :y="7 + 10 * (ind + 1) + '%'"
+      :y="8 + yStep * (ind + 1) + '%'"
       :xlink:href="figure.hansoku"
     />
 
-
-<!-- this is start from 1 -->
-    <image
+    <image class="hikivake"
       v-for="ind of count" 
       v-show="isHikivake(ind-1)"
       :key="ind"
-      width="5%"
-      height="5%"
       x="46.5%"
-      :y="4 + 10 * (ind) + '%'"
+      :y="8 + yStep * (ind) + '%'"
       :xlink:href="figure.hikivake"
     />
   </svg>
-  <div class="menucontainer" v-show="dialog.show">
+  <div class="menucontainer" v-show="dialog.menu != null">
     <div class="menu">
       <div class="body">
-        <div v-show="dialog.menu == 'main'" class="mdiv"></div>
+        <div v-show="dialog.menu == 'welcome' "></div>
+        <div v-show="dialog.menu == 'pool'" class="mdiv">
+          <div style="text-align: right;"><a @click="dialog.menu='team'" href="#">Team Competition</a></div>
+          
+          <div>
+
+<fieldset>
+              <legend>Board Title</legend>
+              <input type="text" v-model="players.title.top" />
+            </fieldset>
+                <fieldset>
+                  <legend>Pool Members</legend>
+                  <textarea rows="6" ref="pool_text" style="width:100%"></textarea>
+                </fieldset>
+                
+                <br/>
+                <button style="width:100%" @click="pool_generate()">Generate</button>
+          </div>
+
+        </div>
+        <div v-show="dialog.menu == 'team'" class="mdiv">
+          <div style="text-align: right;">
+            <a @click="dialog.menu='pool'" href="#">Pool Competition</a>
+          </div>
+          <fieldset>
+              <legend>Board Title</legend>
+              <input type="text" v-model="players.title.top" />
+            </fieldset>
+          <table>
+            <tr>
+              <td colspan="2">
+              </td>
+            </tr>
+                    <tr>
+                      <td>
+                        <fieldset>
+                          <legend>White Team Name</legend>
+                          <input type="text" placeholder="Team Name" v-model="players.title.white" />
+                        </fieldset>                        
+                        <fieldset>
+                          <legend>Members</legend>
+                          <textarea rows=6 ref="white_text" style="width: 100%"></textarea>
+                        </fieldset>
+                      </td>
+                      <td>
+                        <fieldset>
+                          <legend>Red Team Name</legend>
+                          <input type="text" placeholder="Team Name" v-model="players.title.red" />
+                        </fieldset>
+                        <fieldset>
+                          <legend>Members</legend>
+                          <textarea rows=6 ref="red_text" style="width: 100%"></textarea>
+                        </fieldset>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">
+                          <button style="width:100%" @click="team_generate()">Generate</button>
+                      </td>
+                    </tr>
+                  </table>
+                  
+        </div>
+        <div v-show="dialog.menu == 'settings'" class="mdiv">
+            <fieldset>
+              <legend>Save Data</legend>
+              <label>You can save the data into browser storege or remove</label><br/>
+              <button @click="save()">Save</button>&nbsp;
+              <button @click="remove()">Remove</button>
+              <br/>
+              <label ref="save_lbl" style="color:blue"></label>
+            </fieldset>
+            <fieldset>
+              <legend>Export Data</legend>
+              <button @click="csv()">Download CSV File</button>
+            </fieldset>
+            <fieldset>
+              <legend>Author: Ali Baris Ozturk</legend>
+              <a href="mailto:alibarisozturk@gamil.com">alibarisozturk@gamil.com</a>
+            </fieldset>
+        </div>
+        <div v-show="dialog.menu == 'welcome'">
+          <div style="text-align: center;">
+            <br/><br/>
+            <h3>Kendo Board</h3>
+            <p>
+              <a href="#" @click="dialog.menu='pool'">Pool Competition</a>
+            </p>
+            <p>
+              <a href="#" @click="dialog.menu='team'">Team Competition</a>
+            </p>
+          </div>
+        </div>
+
         <div v-show="dialog.menu == 'player'" class="mdiv">
           <div>
             <div :class="'flagbox_'+dialog.player_side"></div>
@@ -238,7 +328,7 @@
           <span v-show="dialog.message!=''">{{ dialog.message }}</span>
         </div>
         <div class="right">
-          <button @click="dialog.show = false">Close</button>
+          <button v-show="players.type != null" @click="dialog.menu = null">Close</button>
         </div>        
       </div>
     </div>
@@ -249,13 +339,12 @@ export default {
   name: "App",
   data() {
     return {
-      redTitle: "Red Team",
-      whiteTitle: "White Team",
+      windowHeight: window.innerHeight,
+      yStep:14,
       dialog:{
         message:"",
         title:"Dialog",
-        menu:"main",
-        show:false,
+        menu:null,
         player_ind:null,
         player_side:null,
         player_hansoku:0
@@ -278,17 +367,17 @@ export default {
         hikivake:
           "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQCAMAAAC3Ycb+AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAMAUExURQAAAAQEBAYGBggICAkJCQwMDA0NDRAQEBQUFBgYGBwcHCAgICQkJCgoKCwsLDAwMDQ0NDg4ODw8PEREREhISExMTFBQUFRUVFhYWFxcXGBgYGRkZGhoaGxsbHBwcHR0dHh4eHx8fH9/fwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGkQEP0AAAEAdFJOU////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////wBT9wclAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAN5ElEQVR4Xu3db2MbNRbFYcMubGlpaWn4Eygt5Pt/R28Sn1DHsTSamXvuPVfS7w1Lu52R9QCxNTPyYW0/H2dN/YYJozdFmnLzmCJN/Y7JcukGJ50V+4ypcuo3nHZWyNljiizk7jFFqgV4TJFKIR5TpFiQxxQphekJ6DNGMDsPkxPSFHkZpiaoKXIZJiasKfI8TEtgU+Q8TEpoU+RrmJLg7jCa2TeYkegwnOFT8Zgip3Q8pshDSh5TRM1jiqh5jC7yHWZBqG8wtCET9BhaRNJjYBFRj2FFZD0GFRH2GFLkB7x00YYTEfc4HL7DQAdJ3mMwkQQeQ4mk8BhIJInHMCJv8XITNIRIIo/D4RUG3XGpPA6HHzDsbuN5kH4ydS5C9GDdS9S1CNODdnNXxyJUD97ddt2KfMALtO9xyvC/CXUq8jNenn2njwusH+v3vX08QWexPY4H4hJAhyJ0j3uQKdIe3+MBZIq05uDxCDJF2vLwOIEcX+E37OtI5CNekn3nl75xEyjv5on3pxPkj7cB1rNbEQBCFOlkey0nj39Bpkg9L4+vIFOklpvHGcgUKefncQ4yRUrxPM6n/9SzX+E9CJRaxNPjOQhRJPFmTsQNsHCG8y5+bYq8yNfjEmSKXObs8QJkijzP2+MlyBQ5z93jCsgU+RrRo7SN0jUo/BFCn3CGJAV4XAUhiqTaXusOgyZUnofr/ynDHyOUSQRDJlSZhcLPFvxBQnlEMGBCtTkogEwR4gxUf5KWQIYXwWAJ1d9rFkGIP9G+4BTKYaiEFt77F0ECPhMJhYESWvosVpmcgUUwTEKLn41rczOsCAZJaHmtojo1g4pgiISWPeogY4rw1vJarpsuTMyAIrEeSyC+15MVCvZYBPG8A0ahaI9l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"
       },
-      hikivakeList:[0],
       players: {
+        type:null,
+        title:{
+          red:null,
+          white:null,
+          top:null
+        },
+        hikivakeList:[],
         red: [
-          { name: "Karatay", ippon: ["men"], hansoku: 0 },
-          { name: "Mustafa", ippon: [], hansoku: 0 },
-          { name: "Zafe", ippon: [], hansoku: 0 },
         ],
         white: [
-          { name: "Çınar", ippon: [ "kote"], hansoku: 0 },
-          { name: "Aysu", ippon: [], hansoku: 0 },
-          { name: "Hande", ippon: [], hansoku: 0 },
         ],
       },
     };
@@ -300,16 +389,31 @@ export default {
         : this.players.white.length;
     },
   },
+
   created() {
-    //this.ippon("red",1,"men");
+    this.load();
+  },
+  mounted() {
+    this.$nextTick(() => {
+      window.addEventListener('resize', this.onResize);
+    })
+  },
+
+  beforeUnmount() { 
+    window.removeEventListener('resize', this.onResize); 
   },
   methods: {
+    onResize() {
+      this.windowHeight = window.innerHeight;
+    },
     pmenu(side, ind) {
-      this.dialog.show = true;
       this.dialog.player_ind = ind;
       this.dialog.player_side = side;
       this.dialog.player_hansoku = this.players[side][ind].hansoku;
       this.dialog.menu = "player";
+    },
+    smenu(name) {
+      this.dialog.menu = name;
     },
     player_name(side,ind) {
       if (this.players[side])
@@ -317,17 +421,24 @@ export default {
       else return "";
     },
     isHikivake(ind) {
-      return this.hikivakeList.indexOf(ind) > -1;
+      return this.players.hikivakeList.indexOf(ind) > -1;
     },
     setHikivake(ind) {
-      var index = this.hikivakeList.indexOf(ind);
+
+      if (this.players.red[this.dialog.player_ind].name == "" || this.players.white[this.dialog.player_ind].name == "") {
+        this.error("There is no opponent");
+        return;
+      }
+
+      var index = this.players.hikivakeList.indexOf(ind);
+
       if ( index > -1 ) {
-        this.hikivakeList.splice(index,1);
+        this.players.hikivakeList.splice(index,1);
       } else {
         var rpc = this.players.red[ind] ? this.players.red[ind].ippon.length : 0;
         var wpc = this.players.white[ind] ? this.players.white[ind].ippon.length : 0;
         if (rpc == wpc) {
-          this.hikivakeList.push(ind);
+          this.players.hikivakeList.push(ind);
         } else {
           this.error("Ippons are not equal! It cant be hikivake");
         }
@@ -343,13 +454,19 @@ export default {
     setIppon(index,ippon) {
       var ts = this.dialog.player_side == "red" ? "red" : "white";
       var os = this.dialog.player_side == "red" ? "white" : "red";
+
+      if (this.players[os][this.dialog.player_ind].name == "") {
+        this.error("There is no opponent");
+        return;
+      }
+
       var osipc = this.players[os][this.dialog.player_ind].ippon.length;
       var ipc = this.players[ts][this.dialog.player_ind].ippon.length;
       var oip = null;
       if ( index<ipc ) {
         oip = this.players[ts][this.dialog.player_ind].ippon[index];
       } 
-      if ( index == 0 && oip == ippon ) { //remove all
+      if ( index == 0 && oip == ippon && ipc > 1 ) { //remove all
         this.error("Please remove the second ippon before first");
       } else if (index == 1 && ipc < 1) {
         //console.log([index,ipc,this.players[ts][this.dialog.player_ind].ippon]);
@@ -358,23 +475,34 @@ export default {
         this.error("The opponent already got 2 ippons");
       } else if (index == 1 && ippon == oip) {
         this.players[ts][this.dialog.player_ind].ippon.splice(1,1);
+      } else if (index == 0 && ippon == oip) {
+        this.players[ts][this.dialog.player_ind].ippon.splice(0,1);
       } else {
         this.players[ts][this.dialog.player_ind].ippon[index] = ippon;
       }
       this.removeHikivake(this.dialog.player_ind);
     },
     removeHikivake(ind) {
-      var index = this.hikivakeList.indexOf(ind);
+      var index = this.players.hikivakeList.indexOf(ind);
       var rpc = this.players.red[ind] ? this.players.red[ind].ippon.length : 0;
       var wpc = this.players.white[ind] ? this.players.white[ind].ippon.length : 0;
       if ( index > -1 && rpc != wpc ) {
-        this.hikivakeList.splice(index,1);
+        this.players.hikivakeList.splice(index,1);
       } 
     },
-    setHansoku() {      
+    setHansoku() {     
+      
+      
       var ts = this.dialog.player_side == "red" ? "red" : "white";
       var os = this.dialog.player_side == "red" ? "white" : "red";
-      this.players[ts][this.dialog.player_ind].hansoku = this.dialog.player_hansoku;
+
+      if (this.players[os][this.dialog.player_ind].name == "") {
+        this.dialog.player_hansoku  = this.players[ts][this.dialog.player_ind].hansoku;
+        this.error("There is no opponent");
+        return;
+      }
+
+      
       if ( this.dialog.player_hansoku < 2 ) {
         if ( this.players[os][this.dialog.player_ind].ippon[1] && this.players[os][this.dialog.player_ind].ippon[1] == "hippon" ) { //remove hippons
           this.players[os][this.dialog.player_ind].ippon.splice(1,1);
@@ -383,14 +511,25 @@ export default {
           this.players[os][this.dialog.player_ind].ippon.splice(0,1);
         }
       } else if (this.dialog.player_hansoku < 4) {        
-        if ( this.players[os][this.dialog.player_ind].ippon[1] && this.players[os][this.dialog.player_ind].ippon[1] == "hippon" ) { //remove hippons
-          this.players[os][this.dialog.player_ind].ippon.splice(1,1);
+        if ( this.players[os][this.dialog.player_ind].ippon.length > 1 ) {
+          this.dialog.player_hansoku = this.players[ts][this.dialog.player_ind].hansoku;
+          this.error("The opponent already got 2 ippons");
+          return;
+        } else if (this.players[os][this.dialog.player_ind].ippon.length == 1) {
+          this.players[os][this.dialog.player_ind].ippon[1] = "hippon";
+        } else {
+          this.players[os][this.dialog.player_ind].ippon[0] = "hippon";
         }
-        this.players[os][this.dialog.player_ind].ippon[0] = "hippon";
       } else if(this.dialog.player_hansoku == 4) {
+        if ( this.players[os][this.dialog.player_ind].ippon.length > 0 ) {
+          this.dialog.player_hansoku  = this.players[ts][this.dialog.player_ind].hansoku;
+          this.error("The opponent already got ippon(s)");
+          return;
+        }
         this.players[os][this.dialog.player_ind].ippon[0] = "hippon";
         this.players[os][this.dialog.player_ind].ippon[1] = "hippon";
       }
+      this.players[ts][this.dialog.player_ind].hansoku = this.dialog.player_hansoku;
       this.removeHikivake(this.dialog.player_ind);
     },
     show(side, player, type, v) {
@@ -409,6 +548,165 @@ export default {
       }
       
     },
+
+    getListFromText(text) {
+      var rawList = (text).trim().split("\n");
+      var list = [];
+      for (var i=0; i<rawList.length; i++) {
+        var name = rawList[i].trim()
+        if (name!="") {          
+          if ( list.indexOf( name ) == -1 ) {
+            list.push(name);
+          } else {
+            throw name+" is already in the list";
+          }
+        }
+      }
+      if (list.length <2) {
+        throw "The list must contain a minimum of 2 players";
+      }
+      return list;
+    },
+
+    pool_generate() {
+
+      var binarySubset= (arr) => {
+        var result = [];
+        var length = arr.length;
+        var subsetcount = ~~( ( length * (length - 1) ) / 2 );
+        var inc = 1;
+        var index = 0;
+        for (var i=0; i < subsetcount; i++) {
+            var next = (index + inc) % length;
+            if (i % 2 == 1) {
+                result.push([arr[index],arr[next]]);
+            } else {
+                result.push([arr[next],arr[index]]);
+            }
+            if ((i + 1) % length == 0) {
+                inc++;
+            }
+            index = (index + 1) % length;
+        }
+        return result;
+      };
+
+      var text = this.$refs.pool_text.value;
+      var list = [];
+      try {
+        list = this.getListFromText(text);
+      } catch(e) {
+        this.error(e);
+        return;
+      }
+      this.$refs.pool_text.value = "";
+
+      var ca = binarySubset(list);
+      this.players.type = "pool";
+      this.players.title.red = "";
+      this.players.title.white = "";
+      this.players.red = [];
+      this.players.white = [];
+      this.players.hikivakeList = [];
+      for ( var j=0; j<ca.length; j++ ) {
+        this.players.red.push({ "name":ca[j][0], ippon:[], hansoku:0 });
+        this.players.white.push({ "name":ca[j][1], ippon:[], hansoku:0 });
+      }
+      this.dialog.menu = null;
+    },
+    team_generate() {
+      var white_text = this.$refs.white_text.value;
+      var red_text = this.$refs.red_text.value;
+      var wlist = [];
+      var rlist = [];
+      try {
+        wlist = this.getListFromText(white_text);
+      } catch(e) {
+        this.error("White, "+e);
+        return;
+      }
+      try {
+        rlist = this.getListFromText(red_text);
+      } catch(e) {
+        this.error("Red, "+e);
+        return;
+      }
+      this.$refs.white_text.value = "";
+      this.$refs.red_text.value = "";
+      this.players.type = "team";
+      this.players.red = [];
+      this.players.white = [];
+      var count = rlist.length > wlist.length ? rlist.length : wlist.length;
+      for (var i=0; i<count; i++) {
+        if ( !rlist[i] ) {
+          this.players.red.push({ name:"", ippon:[], hansoku:0 });
+          this.players.white.push({ name:wlist[i], ippon:["hantei"], hansoku:0 });
+        } else if (!wlist[i]) {
+          this.players.white.push({ name:"", ippon:[], hansoku:0 });
+          this.players.red.push({ name:rlist[i], ippon:["hantei"], hansoku:0 });
+        } else {
+          this.players.red.push({ name:rlist[i], ippon:[], hansoku:0 });
+          this.players.white.push({ name:wlist[i], ippon:[], hansoku:0 });
+        }
+      }
+      this.dialog.menu = null;
+    },
+    print() {
+      window.document.getElementsByClassName("nav")[0].style.display = "none";
+      window.print();
+      setTimeout(()=>{
+        window.document.getElementsByClassName("nav")[0].style.display = "block";
+      },1000);
+
+    },
+    save() {
+      window.localStorage.setItem("__KENDOBOARDDATA__",JSON.stringify(this.players));
+      let self = this;
+      self.$refs.save_lbl.innerHTML = "Data has been saved";
+      setTimeout(()=>{
+        self.$refs.save_lbl.innerHTML = "";
+      },1000);
+    },
+    remove() {
+      window.localStorage.removeItem("__KENDOBOARDDATA__");
+      let self = this;
+      self.$refs.save_lbl.innerHTML = "Data has been removed";
+      setTimeout(()=>{
+        self.$refs.save_lbl.innerHTML = "";
+      },1000);
+    },
+    load() {
+      var players = window.localStorage.getItem("__KENDOBOARDDATA__");
+      if ( typeof players  === "string" ) {
+        this.players = JSON.parse(players);
+      } else {
+        this.dialog.menu = 'welcome';
+      }
+    },
+    csv() {
+      var csvstr = new String("");
+      csvstr +="MatchNumber;WhitePlayer;WhiteIppon1;WhiteIppon2;WhiteHansoku;RedHansoku;RedIppon1;RedIppon2;RedPlayer\n"
+      for(var i=0; i< this.count; i++ ) {
+        var ind = (i+1);
+        var rp = this.players.red[i].name.replace(";",",");
+        var rip1 = (this.players.red[i].ippon[0] ? this.players.red[i].ippon[0] : "" );
+        var rip2 = (this.players.red[i].ippon[1] ? this.players.red[i].ippon[1] : "" );
+        var rh = this.players.red[i].hansoku;
+        var wp = this.players.white[i].name.replace(";",",");
+        var wip1 = (this.players.white[i].ippon[0] ? this.players.white[i].ippon[0] : "" );
+        var wip2 = (this.players.white[i].ippon[1] ? this.players.white[i].ippon[1] : "" );
+        var wh = this.players.white[i].hansoku;
+        csvstr +=(ind+";"+wp+";"+wip1+";"+wip2+";"+wh+";"+rh+";"+rip1+";"+rip2+";"+rp+"\n");
+      }
+      var encodedUri = encodeURI(csvstr);
+      var link = document.createElement("a");
+      link.setAttribute("href", "data:text/csv;charset=utf-8,\uFEFF" + encodedUri);
+      link.setAttribute("download","report.csv");
+      link.click();
+      setTimeout(()=>{
+        link.remove();
+      },2000);
+    },
     error(message) {
       let self = this;
       self.dialog.message = message;
@@ -422,36 +720,100 @@ export default {
 <style>
 body {
   margin: 0%;
-  background-color: rgb(0, 0, 0);
+  font-family: monospace;
 }
 svg {
-  background-color: white;
+  position:fixed;
+  top:0px;
+  left:0px;
+  bottom:900px;
+  right:0;
+  background-color:white;
 }
+
 svg rect {
   fill: none;
   stroke-width: 0.2em;
   stroke: black;
 }
 svg .redr {
-  stroke-width: 0px;
+  stroke-width: 1px;
+  stroke: black;
   fill: red;
+  width: 7%;
+  height: 9%;
 }
 svg .whiter {
   stroke-width: 1px;
   stroke: black;
   fill: white;
+  width: 7%;
+  height: 9%;
 }
 svg line {
-  stroke-width: 0.2em;
+  stroke-width:0.7em;
   stroke: black;
 }
-svg title {
-  color: black;
-  font-size: 0.1em;
+svg .player_name {
+  font-size: 3em;
   cursor: pointer;
 }
-svg .player_name {
+
+svg .title_top {
+  font-size: 5em;
+  font-weight: bolder;
+}
+
+svg .title_white {
+  font-weight: bold;
+  font-size: 3em;
+}
+
+svg .title_red {
+  font-weight: bold;
+  font-size: 3em;
+}
+
+svg .hikivake {
+  width: 5.5%;
+  height: 5.5%;
+}
+
+svg .hansoku {
+  width: 4%;
+  height: 4%;
+}
+
+svg .ippon {
+  width: 4%;
+  height: 4%;
+}
+
+.nav {
+  position: absolute;
+  z-index: 998;
+  top:0%;
+  left: 0%;
+  width: 100%;
+  height: 1.5em;
+  text-align: center;
+}
+
+.nav span {
+  background-color:navy;
+  visibility: hidden;
+}
+
+.nav span a {
+  margin-left: 1em;
+  margin-right: 1em;
+  color: white;
   cursor: pointer;
+  font-size: 0.8em;  
+}
+
+.nav:hover span {
+  visibility:visible;
 }
 
 .menucontainer {
@@ -468,7 +830,7 @@ svg .player_name {
 }
  .menucontainer .menu {
    display: block;
-    width: 50%;
+    width: 400px;
     height: 50%;
     padding: 1em;
     border-radius: 25px;
@@ -476,6 +838,7 @@ svg .player_name {
     border-color: black;
     border-style: solid;
     background-color: #E6E6FA;
+    min-height:370px;
 }
 
 .menucontainer .menu .header {
@@ -485,17 +848,18 @@ svg .player_name {
 }
 .menucontainer .menu .body {
   display: block;
-  height: 85%;
+  height: 90%;
 }
 .menucontainer .menu .footer {
   display: block;
-  height: 15%;
+  min-height: 2em;
+  height: 10%;
 }
 
 .menucontainer .menu .footer .left {
   display: block;
   float: left;
-  width: 70%;
+  width: 60%;
 }
 
 .menucontainer .menu .footer .left span {
@@ -511,12 +875,25 @@ svg .player_name {
 
 .menucontainer .menu .footer .right button {
   font-size: 1em;
-  margin-right: 1em;
+  margin-right: 2em;
+  min-height: 2em;
+  min-width: 8em;
+  border-radius: 25px;
 }
 
 .menucontainer .menu .body .mdiv {
   border-width: 0;
+
+  width: 100%;
+  height: 100%;
 }
+
+.menucontainer .menu .body .mdiv table {
+  display: block;
+  margin: 0 auto 0 auto;
+  width: auto;
+}
+
 .menucontainer .menu .body .mdiv .flagbox_red {
   vertical-align: middle;
   display: inline-block;
@@ -577,7 +954,7 @@ svg .player_name {
 
 .menucontainer .menu .body .mdiv .m_ippons .default:hover {
   cursor: pointer;
-  border-color:greenyellow;
+  border-color:rgb(61, 43, 226);
 }
 
 </style>
