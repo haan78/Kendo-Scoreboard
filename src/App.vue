@@ -6,7 +6,8 @@
       <a @click="smenu('settings')">Setings</a>
     </span>
   </div>
-  <svg :height="windowHeight - 5" width="100%">
+  <!--:height="windowHeight - 5"-->
+  <svg width="100%" height="100%">
     <line x1="49%" :y1="2.3 + yStep + '%'" x2="49%" :y2="2.3 + yStep * (count + 1) + '%'" />
     <line x1="35%" :y1="2.3 + yStep + '%'" x2="35%" :y2="2.3 + yStep * (count + 1) + '%'" />
     <line x1="63%" :y1="2.3 + yStep + '%'" x2="63%" :y2="2.3 + yStep * (count + 1) + '%'" />
@@ -32,11 +33,15 @@
     <text x="88.5%" y="10%" class="title_red" text-anchor="end">
       {{ players.title.red }}
     </text>
+
+    <line x1="2%" y1="2%" x2="98%" y2="2%" />
+    <line x1="2%" y1="15%" x2="98%" y2="15%" />
+
     <line
-      v-for="ind in count + 2"
+      v-for="ind in count"
       x1="2%"
-      :y1="2 + yStep * (ind - 1) + '%'"
-      :y2="2 + yStep * (ind - 1) + '%'"
+      :y1="15 + (yStep * ind) + '%'"
+      :y2="15 + (yStep * ind) + '%'"
       :key="ind"
       x2="98%"
     />
@@ -225,7 +230,7 @@
   </svg>
   <div class="menucontainer" v-show="dialog.menu != null">
     <div class="menu">
-      <div class="header" v-show="dialog.menu!='player'">
+      <div class="header" v-show="dialog.menu!='player' && dialog.menu!='welcome'">
         <div style="text-align: right">
             <a @click="dialog.menu = 'pool'" href="#">Pool Competition</a>
             <a @click="dialog.menu = 'team'" href="#">Team Competition</a>
@@ -329,6 +334,10 @@
             <button @click="writeFile()">Save as file</button>&nbsp;<button :disabled="count<1" @click="print()" >Print out the board</button>
           </fieldset>
           <fieldset>
+            <legend>Results</legend>
+            <button @click="report()">Show Results</button>
+          </fieldset>
+          <fieldset>
             <legend>Author: Ali Baris Ozturk</legend>
             <a href="mailto:alibarisozturk@gamil.com"
               >alibarisozturk@gamil.com</a
@@ -350,6 +359,10 @@
               
             </p>
           </div>
+        </div>
+
+        <div v-if="dialog.menu == 'report'" class="mdiv">
+          <div ref="result_div" ></div>
         </div>
 
         <div v-if="dialog.menu == 'match'"  class="mdiv">
@@ -669,26 +682,6 @@ export default {
     },
 
     pool_generate() {
-      var binarySubset = (arr) => {
-        var result = [];
-        var length = arr.length;
-        var subsetcount = ~~((length * (length - 1)) / 2);
-        var inc = 1;
-        var index = 0;
-        for (var i = 0; i < subsetcount; i++) {
-          var next = (index + inc) % length;
-          if (i % 2 == 0) {
-            result.push([arr[index], arr[next]]);
-          } else {
-            result.push([arr[next], arr[index]]);
-          }
-          if ((i + 1) % length == 0) {
-            inc++;
-          }
-          index = (index + 1) % length;
-        }
-        return result;
-      };
 
       var text = this.$refs.pool_text.value;
       var list = [];
@@ -699,8 +692,8 @@ export default {
         return;
       }
 
-      if ( list.length < 2 ) {
-        this.error('The list must contain a minimum of 2 players');
+      if ( list.length < 2 || list.length > 4 ) {
+        this.error('The list must contain a minimum of 2 players and a maximum of 4 players');
         return;
       }
 
@@ -712,14 +705,23 @@ export default {
       this.$refs.pool_text.value = "";
 
       var ca = [];
-      if (list.length == 3) {
+      if ( list.length == 2 ) {
+        ca = [list[0], list[1]];
+      } else if (list.length == 3) {
         ca = [
           [list[0], list[1]],
           [list[0], list[2]],
           [list[1], list[2]],
         ];
-      } else {
-        ca = binarySubset(list);
+      } else if ( list.length == 4 ) {
+        ca = [
+          [list[0], list[1]],
+          [list[2], list[1]],
+          [list[2], list[3]],
+          [list[0], list[3]],
+          [list[0], list[2]],
+          [list[1], list[3]],
+        ];
       }
       this.players.type = "pool";
       this.players.title.red = "";
@@ -805,27 +807,134 @@ export default {
         this.dialog.menu = "welcome";
       }
     },
+    report() {
+      this.dialog.menu = "report";
+      var html = "";
+      if ( this.players.type == "team" ) {
+        try {
+          var result = this.team_winer();
+          html +="<table class=\"team_result_table\">";
+          html += "<thead><tr> <th></th> <th>White</th> <th>Red</th> </tr></thead>";
+          html += "<tbody><tr> <th>Win</th> <td>"+result.white.win+"</td> <td>"+result.red.win+"</td> </tr>";
+          html += "<tr> <th>Lose</th> <td>"+result.white.lose+"</td> <td>"+result.red.lose+"</td> </tr>";
+          html += "<tr> <th>Draw</th> <td>"+result.white.draw+"</td> <td>"+result.red.draw+"</td> </tr>";
+          html += "<tr> <th>Hit</th> <td>"+result.white.hit+"</td> <td>"+result.red.hit+"</td> </tr>";
+          html += "<tr> <th>Received</th> <td>"+result.white.receive+"</td> <td>"+result.red.receive+"</td> </tr></tbody>";
+          html += "<tfoot><tr> <th>Winner</th> <td colspan>"+result.winer+"</td> </tr></tfoot>";
+          html+="</table>";
+        } catch(e) {
+          this.error(e);
+        }
+      } else { //pool
+        try {
+          var result2 = this.player_pool_order();
+          html +="<table class=\"pool_result_table\">";
+          html += "<thead><tr> <th>Order</th> <th>Won</th> <th>Lose</th> <th>Draw</th> <th>Hit</th> <th>Received</th> <th>Encho</th> </tr></thead>";
+          html += "<tbody>";
+          for(var i=0; i<result2.length; i++) {
+            html += "<tr> <td>"+(i+1)+") "+result2[i].name+"</td>  <td>"+result2[i].win+"</td> <td>"+result2[i].lose+"</td>"+
+                    "<td>"+result2[i].draw+"</td> <td>"+result2[i].hit+"</td> <td>"+result2[i].receive+"</td>"+
+                    "<th>"+result2[i].encho+"</th> </tr>";
+          }
+          html += "</tbody></table>";
+          
+        } catch(e) {
+          this.error(e);
+        }
+      }
+      this.$nextTick( ()=>{ this.$refs.result_div.innerHTML = html; } );
+    },
+    team_winer() {
+      var r = {
+        name:"red",
+        win:0,
+        lose:0,
+        draw:0,
+        hit:0,
+        receive:0
+      };
+      var w = {
+        name:"white",
+        win:0,
+        lose:0,
+        draw:0,
+        hit:0,
+        receive:0
+      };
+      for(var i=0; i<this.players.red.length; i++) {
+        var mr = this.match_result(i);
+        if ( mr.error ==0 ) {
+          r.win += mr.red.win;
+          r.lose += mr.red.lose;
+          r.draw += mr.red.draw;
+          r.hit += mr.red.hit;
+          r.receive += mr.red.receive;
+          w.win += mr.white.win;
+          w.lose += mr.white.lose;
+          w.draw += mr.white.draw;
+          w.hit += mr.white.hit;
+          w.receive += mr.white.receive;
+        } else {
+          throw "Result of "+(i+1)+"th match has a problem! code("+mr.error+")";
+        }
+      }
+      var rp = ( r.win * this.players.red.length ) + r.hit;
+      var wp = ( w.win * this.players.red.length ) + w.hit;
+      if ( rp > wp ) {
+        return {
+          winer:"Red Team ("+this.players.title.red+")",
+          red:r,
+          white:w
+        };
+      }  else if ( rp < wp ) {
+        return {
+          winer:"White Team ("+this.players.title.white+")",
+          red:r,
+          white:w
+        };
+      } else {
+        return {
+          winer:"Encho is required",
+          red:r,
+          white:w
+        };
+      }
+    },
     player_pool_order() {
       var player_inds = [];
       var player_info = [];
       for (var i = 0; i < this.players.red.length; i++) {
-        var rn = this.players.red[i].name;
-        var wn = this.players.white[i].name;
-        if (player_inds.indexOf(rn) < 0) {
-          var info = this.player_pool_info(false, false, rn);
-          info["name"] = rn;
-          player_info.push(info);
-          player_inds.push(rn);
-        }
-        if (player_inds.indexOf(wn) < 0) {
-          var info2 = this.player_pool_info(false, false, wn);
-          info2["name"] = wn;
-          player_info.push(info2);
-          player_inds.push(wn);
+        var result = this.match_result(i);
+        if ( result.error == 0 ) {
+          var rpind = player_inds.indexOf(result.red.name);
+          var wpind = player_inds.indexOf(result.white.name); 
+          if ( rpind < 0 ) {
+            player_inds.push(result.red.name);
+            player_info.push(result.red);
+          } else {
+            player_info[rpind].win += result.red.win;
+            player_info[rpind].lose += result.red.lose;
+            player_info[rpind].draw += result.red.draw;
+            player_info[rpind].hit += result.red.hit;
+            player_info[rpind].receive += result.red.receive;
+          }
+          if ( wpind < 0 ) {
+            player_inds.push(result.white.name);
+            player_info.push(result.white);
+          } else {
+            player_info[wpind].win += result.white.win;
+            player_info[wpind].lose += result.white.lose;
+            player_info[wpind].draw += result.white.draw;
+            player_info[wpind].hit += result.white.hit;
+            player_info[wpind].receive += result.white.receive;
+          }
+        } else {
+          throw "Result of "+(i+1)+"th match has a problem! code("+result.error+")";
         }
       }
 
-      var encho = [];
+      var encho_r = [];
+      var encho_w = [];
 
       player_info.sort((a, b) => {
         if (a.win > b.win) {
@@ -835,79 +944,114 @@ export default {
         } else if (
           a.win == b.win &&
           a.lose == b.lose &&
-          a.hikiwake > b.hikiwake
+          a.draw > b.draw
         ) {
           return -1;
         } else if (
           a.win == b.win &&
           a.lose == b.lose &&
-          a.hikiwake == b.hikiwake &&
-          a.pscore > b.pscore
+          a.draw == b.draw &&
+          a.hit > b.hit
         ) {
           return -1;
         } else if (
           a.win == b.win &&
           a.lose == b.lose &&
-          a.hikiwake == b.hikiwake &&
-          a.pscore == b.pscore &&
-          a.plost < b.plost
+          a.draw == b.draw &&
+          a.hit == b.hit &&
+          a.receive < b.receive
         ) {
           return -1;
         } else if (
           a.win == b.win &&
           a.lose == b.lose &&
-          a.hikiwake == b.hikiwake &&
-          a.pscore == b.pscore &&
-          a.plost == b.plost
+          a.draw == b.draw &&
+          a.hit == b.hit &&
+          a.receive == b.receive
         ) {
-          encho.push([a.name, b.name]);
+          encho_r.push(a.name);
+          encho_w.push(b.name);
           return 0;
         } else {
           return 1;
         }
       });
 
-      console.log([player_info, encho]);
-    },
-    player_pool_info(sidetabe, ind, pname) {
-      var info = {
-        win: 0,
-        lose: 0,
-        plost: 0,
-        pscore: 0,
-        hikiwake: 0,
-        value: 0,
-      };
-      var name = null;
-      if (pname) {
-        name = pname;
-      } else if (sidetabe !== null) {
-        name = this.players[sidetabe][ind].name;
-      } else {
-        return info;
-      }
-      for (var s = 0; s < 2; s++) {
-        var side = s == 0 ? "red" : "white";
-        var os = s == 0 ? "white" : "red";
-        for (var i = 0; i < this.players[side].length; i++) {
-          if (name == this.players[side][i].name) {
-            info.pscore += this.players[side][i].ippon.length;
-            info.plost += this.players[os][i].ippon.length;
-            info.win +=
-              this.players[side][i].ippon.length >
-              this.players[os][i].ippon.length
-                ? 1
-                : 0;
-            info.lose +=
-              this.players[side][i].ippon.length <
-              this.players[os][i].ippon.length
-                ? 1
-                : 0;
-            info.hikiwake += this.players.status[i] == "hikiwake" ? 1 : 0;
-          }
+      var results = [];
+      for (var j = 0; j<this.players.pool_quota; j++) {
+        var ewi = encho_w.indexOf(player_info[j].name);
+        var eri = encho_r.indexOf(player_info[j].name);
+        if ( ewi > -1 ) {
+          player_info[j]["encho"] = encho_r[ewi];
+        } else if ( eri > -1 ) {
+          player_info[j]["encho"] = encho_w[eri];
+        } else {
+          player_info[j]["encho"] = "";
         }
+        results.push(player_info[j]);
       }
-      return info;
+      return results;
+    },
+    match_result(ind) {
+      var isHiki = this.players.status[ind] == 'hikiwake';
+      var whan = this.players.white[ind].hantei;
+      var rhan = this.players.red[ind].hantei;
+      var rhc = (this.players.red[ind].hansoku1 ? 1 : 0) +
+                (this.players.red[ind].hansoku2 ? 1 : 0) +
+                (this.players.red[ind].hansoku3 ? 1 : 0) +
+                (this.players.red[ind].hansoku4 ? 1 : 0);
+      var whc = (this.players.white[ind].hansoku1 ? 1 : 0) +
+                (this.players.white[ind].hansoku2 ? 1 : 0) +
+                (this.players.white[ind].hansoku3 ? 1 : 0) +
+                (this.players.white[ind].hansoku4 ? 1 : 0);
+      var ric = (this.players.red[ind].ippon1 !== false ? 1 : 0) +
+                (this.players.red[ind].ippon2 !== false ? 1 : 0);
+      var wic = (this.players.white[ind].ippon1 !== false ? 1 : 0) +
+                (this.players.white[ind].ippon2 !== false ? 1 : 0);
+      var whic = (this.players.white[ind].ippon1 == "hippon" ? 1 : 0) +
+                (this.players.white[ind].ippon2 == "hippon" ? 1 : 0);
+      var rhic = (this.players.red[ind].ippon1 == "hippon" ? 1 : 0) +
+                (this.players.red[ind].ippon2 == "hippon" ? 1 : 0);
+      var ecode = 0;
+      if ( isHiki && ric != wic ) {
+        ecode =  1;
+      } else if ( whan && wic != ric ) {
+        ecode =  2;
+      } else if ( rhan && wic != ric ) {
+        ecode =  3;
+      } else if ( whc > 1 && rhic < 1 ) {
+        ecode =  4;
+      } else if ( whc > 3 && rhic < 2 ) {
+        ecode =  5;
+      } else if ( rhc > 1 && whic < 1 ) {
+        ecode =  6;
+      } else if ( rhc > 3 && whic < 2 ) {
+        ecode =  7;
+      } else if ( wic + ric > 3 ) {
+        ecode =  8;
+      } else if ( whan && rhan ) {
+        ecode = 9;
+      }
+
+      return {
+        "error":ecode,
+        "red":{
+          name:this.players.red[ind].name,
+          win:( ric > wic ? 1 : 0 ) + ( rhan ? 1 : 0 ),
+          lose:( ric < wic ? 1 : 0 ),
+          draw:(ric == wic ? 1 : 0),
+          hit: ric,
+          receive : wic
+        },
+        "white":{
+          name:this.players.white[ind].name,
+          win:( ric < wic ? 1 : 0 ) + ( whan ? 1 : 0 ),
+          lose:( ric > wic ? 1 : 0 ),
+          draw:(ric == wic ? 1 : 0),
+          hit: wic,
+          receive : ric
+        }
+      };            
     },
     readFile(e) {
       let self = this;
@@ -971,20 +1115,26 @@ svg {
   background-color: white;
 }
 
+svg .top_rect {
+  fill: none;
+  stroke-width: 0.7em;
+  stroke: black;
+}
+
 svg rect {
   fill: none;
   stroke-width: 0.2em;
   stroke: black;
 }
 svg .redr {
-  stroke-width: 1px;
+  stroke-width: 3px;
   stroke: black;
   fill: red;
   width: 7%;
   height: 10%;
 }
 svg .whiter {
-  stroke-width: 1px;
+  stroke-width: 3px;
   stroke: black;
   fill: white;
   width: 7%;
@@ -1098,18 +1248,18 @@ svg .ippon {
 
 .menucontainer .menu .body {
   display: block;
-  height: 90%;
+  height: 80%;
 }
 .menucontainer .menu .footer {
   display: block;
-  min-height: 2em;
-  height: 10%;
+  min-height: 4em;
+  height: 15%;
 }
 
 .menucontainer .menu .footer .left {
   display: block;
   float: left;
-  width: 60%;
+  width: 80%;
 }
 
 .menucontainer .menu .footer .left .error {
@@ -1123,7 +1273,7 @@ svg .ippon {
 .menucontainer .menu .footer .right {
   display: block;
   float: right;
-  width: 30%;
+  width: 20%;
   text-align: right;
 }
 
@@ -1170,6 +1320,39 @@ svg .ippon {
 .menucontainer .paction:hover {
   border-color: red;
   opacity: 1;
+}
+
+.menucontainer .menu .body .mdiv .team_result_table {
+  background-color: white;
+  border-width: 1px;
+  border-spacing: 0px;
+  border-style: solid;
+  border-color: black;
+}
+.menucontainer .menu .body .mdiv .team_result_table td,th {
+  text-align: left;
+  border-width: 1px;
+  border-spacing: 0px;
+  border-style: solid;
+  border-color: black;
+  font-size: large;
+}
+
+.menucontainer .menu .body .mdiv .pool_result_table {
+  background-color: white;
+  border-width: 1px;
+  border-spacing: 0px;
+  border-style: solid;
+  border-color: black;
+}
+
+.menucontainer .menu .body .mdiv .pool_result_table td,th {
+  text-align: left;
+  border-width: 1px;
+  border-spacing: 0px;
+  border-style: solid;
+  border-color: black;
+  font-size: large;
 }
 
 
