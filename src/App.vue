@@ -94,7 +94,7 @@
       :key="ind"
       v-show="show('white', ind, 'ippon', 1) !== false"
       x="35%"
-      :y="4 + yStep * (ind + 1) + '%'"
+      :y="4.4 + yStep * (ind + 1) + '%'"
       :xlink:href="show('white', ind, 'ippon', 1)"
     />
     <image
@@ -112,7 +112,7 @@
       :key="ind"
       v-show="show('white', ind, 'hansoku', 1) !== false"
       x="38%"
-      :y="4 + yStep * (ind + 1) + '%'"
+      :y="4.4 + yStep * (ind + 1) + '%'"
       :xlink:href="figure.hansoku"
     />
     <image
@@ -130,7 +130,7 @@
       :key="ind"
       v-show="show('white', ind, 'hansoku', 3) !== false"
       x="41%"
-      :y="4 + yStep * (ind + 1) + '%'"
+      :y="4.4 + yStep * (ind + 1) + '%'"
       :xlink:href="figure.hansoku"
     />
     <image
@@ -159,7 +159,7 @@
       :key="ind"
       v-show="show('red', ind, 'ippon', 1)"
       x="59%"
-      :y="4 + yStep * (ind + 1) + '%'"
+      :y="4.4 + yStep * (ind + 1) + '%'"
       :xlink:href="show('red', ind, 'ippon', 1)"
     />
     <image
@@ -177,7 +177,7 @@
       :key="ind"
       v-show="show('red', ind, 'hansoku', 1)!== false"
       x="56%"
-      :y="4 + yStep * (ind + 1) + '%'"
+      :y="4.4 + yStep * (ind + 1) + '%'"
       :xlink:href="figure.hansoku"
     />
     <image
@@ -195,7 +195,7 @@
       :key="ind"
       v-show="show('red', ind, 'hansoku', 3)!== false"
       x="53%"
-      :y="4 + yStep * (ind + 1) + '%'"
+      :y="4.4 + yStep * (ind + 1) + '%'"
       :xlink:href="figure.hansoku"
     />
     <image
@@ -706,7 +706,7 @@ export default {
 
       var ca = [];
       if ( list.length == 2 ) {
-        ca = [list[0], list[1]];
+        ca = [ [list[0], list[1]]];
       } else if (list.length == 3) {
         ca = [
           [list[0], list[1]],
