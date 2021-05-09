@@ -7,19 +7,19 @@
     </span>
   </div>
   <!--:height="windowHeight - 5"-->
-  <svg width="100%" height="100%">
-    <line x1="49%" :y1="2.3 + yStep + '%'" x2="49%" :y2="2.3 + yStep * (count + 1) + '%'" />
-    <line x1="35%" :y1="2.3 + yStep + '%'" x2="35%" :y2="2.3 + yStep * (count + 1) + '%'" />
-    <line x1="63%" :y1="2.3 + yStep + '%'" x2="63%" :y2="2.3 + yStep * (count + 1) + '%'" />
-    <line x1="2.3%" y1="1.5%" x2="2.3%" :y2="2.3 + yStep * (count + 1) + '%'" />
+  <svg width="100%" height="100%" overflow="auto">
+    <line x1="49%" :y1="2.7 + yStep + '%'" x2="49%" :y2="2.7 + yStep * (count + 1) + '%'" />
+    <line x1="35%" :y1="2.7 + yStep + '%'" x2="35%" :y2="2.7 + yStep * (count + 1) + '%'" />
+    <line x1="63%" :y1="2.7 + yStep + '%'" x2="63%" :y2="2.7 + yStep * (count + 1) + '%'" />
+    <line x1="2.3%" y1="1.5%" x2="2.3%" :y2="2.8+ yStep * (count + 1) + '%'" />
     <line
       x1="97.8%"
       y1="1.5%"
       x2="97.8%"
-      :y2="2.3 + yStep * (count + 1) + '%'"
+      :y2="2.8+ yStep * (count + 1) + '%'"
     />
-    <rect x="3.5%" y="3.5%" class="whiter" />
-    <rect x="89.2%" y="3.5%" class="redr" />
+    <rect x="3%" y="3.5%" class="whiter" />
+    <rect x="90%" y="3.5%" class="redr" />
     <text x="49%" y="9%" text-anchor="middle" class="title_top">
       {{ players.title.top }}
     </text>
@@ -50,7 +50,7 @@
       v-for="(p, ind) in players.red"
       :key="ind"
       x="96%"
-      :y="9.1+ yStep * (ind + 1) + '%'"
+      :y="10+ yStep * (ind + 1) + '%'"
       text-anchor="end"
       font-weight="normal"
       font-size="0.7em"
@@ -64,7 +64,7 @@
       v-for="(p, ind) in players.white"
       :key="ind"
       x="4%"
-      :y="9.1+ yStep * (ind + 1) + '%'"
+      :y="10+ yStep * (ind + 1) + '%'"
       text-anchor="start"
       font-weight="normal"
       font-size="0.7em"
@@ -93,8 +93,8 @@
       v-for="(p, ind) in players.white"
       :key="ind"
       v-show="show('white', ind, 'ippon', 1) !== false"
-      x="34.5%"
-      :y="3.7 + yStep * (ind + 1) + '%'"
+      x="35%"
+      :y="4 + yStep * (ind + 1) + '%'"
       :xlink:href="show('white', ind, 'ippon', 1)"
     />
     <image
@@ -102,8 +102,8 @@
       v-for="(p, ind) in players.white"
       :key="ind"
       v-show="show('white', ind, 'ippon', 2) !== false"
-      x="34.5%"
-      :y="9.1+ yStep * (ind + 1) + '%'"
+      x="35%"
+      :y="9.3+ yStep * (ind + 1) + '%'"
       :xlink:href="show('white', ind, 'ippon', 2)"
     />
     <image
@@ -112,7 +112,7 @@
       :key="ind"
       v-show="show('white', ind, 'hansoku', 1) !== false"
       x="38%"
-      :y="3.7 + yStep * (ind + 1) + '%'"
+      :y="4 + yStep * (ind + 1) + '%'"
       :xlink:href="figure.hansoku"
     />
     <image
@@ -121,7 +121,7 @@
       :key="ind"
       v-show="show('white', ind, 'hansoku', 2) !== false"
       x="38%"
-      :y="9.1+ yStep * (ind + 1) + '%'"
+      :y="9.3+ yStep * (ind + 1) + '%'"
       :xlink:href="figure.hansoku"
     />
     <image
@@ -130,7 +130,7 @@
       :key="ind"
       v-show="show('white', ind, 'hansoku', 3) !== false"
       x="41%"
-      :y="3.7 + yStep * (ind + 1) + '%'"
+      :y="4 + yStep * (ind + 1) + '%'"
       :xlink:href="figure.hansoku"
     />
     <image
@@ -139,7 +139,7 @@
       :key="ind"
       v-show="show('white', ind, 'hansoku', 4) !== false"
       x="41%"
-      :y="9.1+ yStep * (ind + 1) + '%'"
+      :y="9.3+ yStep * (ind + 1) + '%'"
       :xlink:href="figure.hansoku"
     />
 
@@ -148,7 +148,7 @@
       v-for="ind of count"
       :key="ind"
       x="44%"
-      :y="6.1+ yStep * (ind) + '%'"
+      :y="6.7+ yStep * (ind) + '%'"
       v-show="players.white[ind-1].hantei"
       :xlink:href="figure.hantei"
     />
@@ -158,8 +158,8 @@
       v-for="(p, ind) in players.red"
       :key="ind"
       v-show="show('red', ind, 'ippon', 1)"
-      x="58.5%"
-      :y="3.7 + yStep * (ind + 1) + '%'"
+      x="59%"
+      :y="4 + yStep * (ind + 1) + '%'"
       :xlink:href="show('red', ind, 'ippon', 1)"
     />
     <image
@@ -167,8 +167,8 @@
       v-for="(p, ind) in players.red"
       :key="ind"
       v-show="show('red', ind, 'ippon', 2)"
-      x="58.5%"
-      :y="9.1+ yStep * (ind + 1) + '%'"
+      x="59%"
+      :y="9.3+ yStep * (ind + 1) + '%'"
       :xlink:href="show('red', ind, 'ippon', 2)"
     />
     <image
@@ -176,8 +176,8 @@
       v-for="(p, ind) in players.red"
       :key="ind"
       v-show="show('red', ind, 'hansoku', 1)!== false"
-      x="55%"
-      :y="3.7 + yStep * (ind + 1) + '%'"
+      x="56%"
+      :y="4 + yStep * (ind + 1) + '%'"
       :xlink:href="figure.hansoku"
     />
     <image
@@ -185,8 +185,8 @@
       v-for="(p, ind) in players.red"
       :key="ind"
       v-show="show('red', ind, 'hansoku', 2)!== false"
-      x="55%"
-      :y="9.1+ yStep * (ind + 1) + '%'"
+      x="56%"
+      :y="9.3+ yStep * (ind + 1) + '%'"
       :xlink:href="figure.hansoku"
     />
     <image
@@ -194,8 +194,8 @@
       v-for="(p, ind) in players.red"
       :key="ind"
       v-show="show('red', ind, 'hansoku', 3)!== false"
-      x="52%"
-      :y="3.7 + yStep * (ind + 1) + '%'"
+      x="53%"
+      :y="4 + yStep * (ind + 1) + '%'"
       :xlink:href="figure.hansoku"
     />
     <image
@@ -203,8 +203,8 @@
       v-for="(p, ind) in players.red"
       :key="ind"
       v-show="show('red', ind, 'hansoku', 4)!== false"
-      x="52%"
-      :y="9.1+ yStep * (ind + 1) + '%'"
+      x="53%"
+      :y="9.3+ yStep * (ind + 1) + '%'"
       :xlink:href="figure.hansoku"
     />
 
@@ -212,8 +212,8 @@
       class="ippon"
       v-for="ind of count"
       :key="ind"
-      x="49%"
-      :y="6.1+ yStep * (ind) + '%'"
+      x="50%"
+      :y="6.7+ yStep * (ind) + '%'"
       v-show="players.red[ind-1].hantei"
       :xlink:href="figure.hantei"
     />
@@ -223,8 +223,8 @@
       v-for="ind of count"
       v-show="ishikiwake(ind - 1)"
       :key="ind"
-      x="46.2%"
-      :y="7 + yStep * ind + '%'"
+      x="46.5%"
+      :y="6.5 + yStep * ind + '%'"
       :xlink:href="figure.hikiwake"
     />
   </svg>
@@ -462,7 +462,7 @@ export default {
   data() {
     return {
       windowHeight: window.innerHeight,
-      yStep: 13,
+      yStep: 12,
       time:{
         point:0,
         interval:null
@@ -757,8 +757,8 @@ export default {
       if ( rlist.length != wlist.length ) {
         this.error('Team numbers must be equal, if there is a player absent please put `?` instead');
         return;
-      } else if ( rlist.length < 1 ) {
-        this.error('The list must contain a minimum of 2 players');
+      } else if ( rlist.length < 1 || rlist.length > 7 ) {
+        this.error('The list must contain a minimum of 2 players and a maximum of 14 players');
         return;
       }
 
@@ -1105,6 +1105,7 @@ export default {
 body {
   margin: 0%;
   font-family: monospace;
+  font-size: 1em;
 }
 svg {
   position: fixed;
@@ -1145,44 +1146,44 @@ svg line {
   stroke: black;
 }
 svg .player_name {
-  font-size: 3em;
+  font-size: xx-large;
   cursor: pointer;
 }
 
 svg .title_top {
-  font-size: 4.5em;
+  font-size: 4em;
   font-weight: bolder;
 }
 
 svg .title_timer {
-  font-size: 3em;
+  font-size: xx-large;
   font-weight: bolder;
   cursor: pointer;
 }
 
 svg .title_white {
   font-weight: bold;
-  font-size: 3em;
+  font-size: xx-large;
 }
 
 svg .title_red {
   font-weight: bold;
-  font-size: 3em;
+  font-size: xx-large;
 }
 
 svg .hikiwake {
-  width: 5.5%;
-  height: 5.5%;
+  width: 5%;
+  height: 5%;
 }
 
 svg .hansoku {
-  width: 5%;
-  height: 5%;
+  width: 4%;
+  height: 4%;
 }
 
 svg .ippon {
-  width: 5%;
-  height: 5%;
+  width: 4%;
+  height: 4%;
 }
 
 .nav {
