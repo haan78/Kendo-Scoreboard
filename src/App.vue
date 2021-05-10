@@ -1,8 +1,9 @@
 <template>
   <div class="nav">
     <span>
-      <a @click="smenu('pool')">New Pool Competition</a>
-      <a @click="smenu('team')">New Team Competition</a>
+      <a @click="smenu('pool')">New Pool</a>
+      <a @click="smenu('team')">New Team</a>
+      <a @click="smenu('elimination')">New Elimination</a>      
       <a @click="smenu('settings')">Setings</a>
     </span>
   </div>
@@ -230,11 +231,12 @@
   </svg>
   <div class="menucontainer" v-show="dialog.menu != null">
     <div class="menu">
-      <div class="header" v-show="dialog.menu!='player' && dialog.menu!='welcome'">
+      <div class="header" v-show="dialog.menu!='match' && dialog.menu!='welcome'">
         <div style="text-align: right">
-            <a @click="dialog.menu = 'pool'" href="#">Pool Competition</a>
-            <a @click="dialog.menu = 'team'" href="#">Team Competition</a>
-            <a @click="dialog.menu = 'settings'" href="#">Settings</a>
+            <a @click="dialog.menu = 'pool'" :class="dialog.menu == 'pool' ? 'btnactive' : 'btnnormal'" href="#">Pool</a>
+            <a @click="dialog.menu = 'team'" :class="dialog.menu == 'team' ? 'btnactive' : 'btnnormal'" href="#">Team</a>
+            <a @click="dialog.menu = 'elimination'" :class="dialog.menu == 'elimination' ? 'btnactive' : 'btnnormal'"  href="#">Elimination</a>
+            <a @click="dialog.menu = 'settings'" :class="dialog.menu == 'settings' ? 'btnactive' : 'btnnormal'" href="#">Settings</a>            
           </div>
       </div>
       <div class="body">
@@ -266,9 +268,6 @@
           </fieldset>
           <table>
             <tr>
-              <td colspan="2"></td>
-            </tr>
-            <tr>
               <td>
                 <fieldset>
                   <legend>White Team Name</legend>
@@ -281,8 +280,8 @@
                 <fieldset>
                   <legend>Members</legend>
                   <textarea
-                    rows="6"
-                    ref="white_text"
+                    rows="7"
+                    ref="white_text_team"
                     style="width: 100%"
                   ></textarea>
                 </fieldset>
@@ -299,8 +298,8 @@
                 <fieldset>
                   <legend>Members</legend>
                   <textarea
-                    rows="6"
-                    ref="red_text"
+                    rows="7"
+                    ref="red_text_team"
                     style="width: 100%"
                   ></textarea>
                 </fieldset>
@@ -310,6 +309,44 @@
               <td colspan="2">
                 <span>Team numbers must be equal, if there is a player absent please put a question mark "?" instead </span><br/>
                 <button style="width: 100%" @click="team_generate()">
+                  Generate
+                </button>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div v-if="dialog.menu == 'elimination'" class="mdiv">
+          <fieldset>
+            <legend>Board Title</legend>
+            <input type="text" v-model="players.title.top" />
+          </fieldset>
+          <table>
+            <tr>
+              <td>
+                <fieldset>
+                  <legend>White Side Players</legend>
+                  <textarea
+                    rows="7"
+                    ref="white_text_eli"
+                    style="width: 100%"
+                  ></textarea>
+                </fieldset>
+              </td>
+              <td>
+                <fieldset>
+                  <legend>Red Side Players</legend>
+                  <textarea
+                    rows="7"
+                    ref="red_text_eli"
+                    style="width: 100%"
+                  ></textarea>
+                </fieldset>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <span>Team numbers must be equal, if there is a player absent please put a question mark "?" instead </span><br/>
+                <button style="width: 100%" @click="elim_generate()">
                   Generate
                 </button>
               </td>
@@ -339,20 +376,23 @@
           </fieldset>
           <fieldset>
             <legend>Author: Ali Baris Ozturk</legend>
-            <a href="mailto:alibarisozturk@gamil.com"
-              >alibarisozturk@gamil.com</a
+            <a href="mailto:alibarisozturk@gmail.com"
+              >alibarisozturk@gmail.com</a
             >
           </fieldset>
         </div>
         <div v-if="dialog.menu == 'welcome'">
           <div style="text-align: center">
             <br /><br />
-            <h3>Kendo Board</h3>
+            <h3>Kendo Scoreboard</h3>
             <p>
               <a href="#" @click="dialog.menu = 'pool'">Pool Competition</a>
             </p>
             <p>
               <a href="#" @click="dialog.menu = 'team'">Team Competition</a>
+            </p>
+            <p>
+              <a href="#" @click="dialog.menu = 'elimination'">Elimination Group</a>
             </p>
             <p>
               <a href="#" @click="dialog.menu = 'settings'">Settings</a>
@@ -457,6 +497,7 @@
   </div>
 </template>
 <script>
+/*eslint no-redeclare: 0*/
 export default {
   name: "App",
   data() {
@@ -737,18 +778,18 @@ export default {
       this.dialog.menu = null;
     },
     team_generate() {
-      var white_text = this.$refs.white_text.value;
-      var red_text = this.$refs.red_text.value;
+      var white_text_team = this.$refs.white_text_team.value;
+      var red_text_team = this.$refs.red_text_team.value;
       var wlist = [];
       var rlist = [];
       try {
-        wlist = this.getListFromText(white_text);
+        wlist = this.getListFromText(white_text_team);
       } catch (e) {
         this.error("White, " + e);
         return;
       }
       try {
-        rlist = this.getListFromText(red_text);
+        rlist = this.getListFromText(red_text_team);
       } catch (e) {
         this.error("Red, " + e);
         return;
@@ -762,8 +803,8 @@ export default {
         return;
       }
 
-      this.$refs.white_text.value = "";
-      this.$refs.red_text.value = "";
+      this.$refs.white_text_team.value = "";
+      this.$refs.red_text_team.value = "";
       this.players.type = "team";
       this.players.red = [];
       this.players.white = [];
@@ -778,6 +819,50 @@ export default {
       }
       this.dialog.menu = null;
     },
+
+    elim_generate() {
+      var white_text_eli = this.$refs.white_text_eli.value;
+      var red_text_eli = this.$refs.red_text_eli.value;
+      var wlist = [];
+      var rlist = [];
+      try {
+        wlist = this.getListFromText(white_text_eli);
+      } catch (e) {
+        this.error("White, " + e);
+        return;
+      }
+      try {
+        rlist = this.getListFromText(red_text_eli);
+      } catch (e) {
+        this.error("Red, " + e);
+        return;
+      }
+
+      if ( rlist.length != wlist.length ) {
+        this.error('Team numbers must be equal, if there is a player absent please put `?` instead');
+        return;
+      } else if ( rlist.length < 1 || rlist.length > 7 ) {
+        this.error('The list must contain a minimum of 2 players and a maximum of 14 players');
+        return;
+      }
+
+      this.$refs.white_text_eli.value = "";
+      this.$refs.red_text_eli.value = "";
+      this.players.type = "eli";
+      this.players.red = [];
+      this.players.white = [];
+      this.players.status = [];
+      var count = rlist.length;
+      for (var i = 0; i < count; i++) {
+        var w = { name: (wlist[i]=="?" ? "" : wlist[i]), ippon1:false, ippon2:false, hansoku1:false, hansoku2:false, hansoku3:false, hansoku4:false, hantei:false };
+        var r = { name: (rlist[i]=="?" ? "" : rlist[i]), ippon1:false, ippon2:false, hansoku1:false, hansoku2:false, hansoku3:false, hansoku4:false, hantei:false };
+        this.players.white.push(w);
+        this.players.red.push(r);
+        this.players.status.push("");
+      }
+      this.dialog.menu = null;
+    },
+
     print() {
       this.dialog.menu = null;
       setTimeout(()=>{ window.print(); },1000);
@@ -810,9 +895,10 @@ export default {
     report() {
       this.dialog.menu = "report";
       var html = "";
+      var result;
       if ( this.players.type == "team" ) {
         try {
-          var result = this.team_winer();
+          result = this.team_winer();
           html +="<table class=\"team_result_table\">";
           html += "<thead><tr> <th></th> <th>White</th> <th>Red</th> </tr></thead>";
           html += "<tbody><tr> <th>Win</th> <td>"+result.white.win+"</td> <td>"+result.red.win+"</td> </tr>";
@@ -825,19 +911,42 @@ export default {
         } catch(e) {
           this.error(e);
         }
-      } else { //pool
+      } else if ( this.players.type == "pool" ) {
         try {
-          var result2 = this.player_pool_order();
+          result = this.player_pool_order();
           html +="<table class=\"pool_result_table\">";
           html += "<thead><tr> <th>Order</th> <th>Won</th> <th>Lose</th> <th>Draw</th> <th>Hit</th> <th>Received</th> <th>Encho</th> </tr></thead>";
           html += "<tbody>";
-          for(var i=0; i<result2.length; i++) {
-            html += "<tr> <td>"+(i+1)+") "+result2[i].name+"</td>  <td>"+result2[i].win+"</td> <td>"+result2[i].lose+"</td>"+
-                    "<td>"+result2[i].draw+"</td> <td>"+result2[i].hit+"</td> <td>"+result2[i].receive+"</td>"+
-                    "<th>"+result2[i].encho+"</th> </tr>";
+          for(var i=0; i<result.length; i++) {
+            html += "<tr> <td>"+(i+1)+") "+result[i].name+"</td>  <td>"+result[i].win+"</td> <td>"+result[i].lose+"</td>"+
+                    "<td>"+result[i].draw+"</td> <td>"+result[i].hit+"</td> <td>"+result[i].receive+"</td>"+
+                    "<th>"+result[i].encho+"</th> </tr>";
           }
           html += "</tbody></table>";
           
+        } catch(e) {
+          this.error(e);
+        }
+      } else if ( this.players.type=="eli" ) {
+        try {
+          html +="<table class=\"eli_result_table\"><thead>";
+          html += "<tr><th></th><th>Player Name</th><th>Side</th><th>Won by</th></tr>";
+          html += "</thead><tbody>";
+          result = this.eli_winner();
+          for (var i=0; i<result.length; i++) {
+            html += "<tr>";
+            html += "<td>"+(i+1)+"</td>";
+            if ( result[i] !== null ) {
+              html += "<td>"+result[i].name+
+            "</td><td>"+result[i].side+
+            "</td><td>"+( result[i].hantei ? "Hantei" : result[i].ippons.length+" Ippons" )
+            +"</td>";
+            } else {
+              html+="<td colspan=\"3\" class=\"encho\">ENCHO</td>";
+            }   
+            html += "</tr>";         
+          }
+          html += "</tbody></table>";
         } catch(e) {
           this.error(e);
         }
@@ -899,6 +1008,51 @@ export default {
           white:w
         };
       }
+    },
+    eli_winner() {
+      var result=[];
+      for ( var i = 0; i<this.players.red.length; i++ ) {
+        var r = {
+          side:"red",
+          name:this.players.red[i].name,
+          ippons:[],
+          hantei:false
+        };
+        var w = {
+          side:"white",
+          name:this.players.white[i].name,
+          ippons:[],
+          hantei:false
+        };
+        var mr = this.match_result(i);
+        if ( mr.error ==0 ) {
+          if (this.players.red[i].ippon1) {
+            r.ippons.push(this.players.red[i].ippon1);
+          } if ( this.players.red[i].ippon2 ) {
+            r.ippons.push(this.players.red[i].ippon2);
+          }
+          r.hantei = this.players.red[i].hantei;
+
+          if (this.players.white[i].ippon1) {
+            w.ippons.push(this.players.white[i].ippon1);
+          } if ( this.players.white[i].ippon2 ) {
+            w.ippons.push(this.players.white[i].ippon2);
+          }
+          w.hantei = this.players.white[i].hantei;
+          var rp = r.ippons.length + ( r.hantei ? 1 : 0 );
+          var wp = w.ippons.length + ( w.hantei ? 1 : 0 );
+          if ( rp > wp ) {
+            result.push(r); 
+          } else if ( rp < wp ) {
+            result.push(w); 
+          } else {
+            result.push(null);
+          }                 
+        } else {
+          throw "Result of "+(i+1)+"th match has a problem! code("+mr.error+")";
+        }
+      }
+      return result;
     },
     player_pool_order() {
       var player_inds = [];
@@ -1235,16 +1389,48 @@ svg .ippon {
   border-color: black;
   border-style: solid;
   background-color: #e6e6fa;
-  min-height: 370px;
+  min-height: 400px;
 }
 
 .menucontainer .menu .header {
-  height: 6%;
+  height: 10%;
   text-align: center;
 }
 
 .menucontainer .menu .header a {
+  text-decoration: none;
   margin-left: 1em;
+  color: #000;
+  border-radius: 5px;
+  border-spacing: 2px;
+  border-width: 1px;
+  border-color: black;
+  border-style: solid;
+  line-height: 0.9;
+  background-color: cornflowerblue;
+  display: inline-block;
+  padding: 4px;
+}
+
+.menucontainer .menu .header a:active {
+  color: red;
+}
+
+.menucontainer .menu .header a:hover {
+  text-decoration: underline;
+}
+
+.menucontainer .menu .header .btnactive {
+  font-weight: bold;
+  -moz-box-shadow:    inset 0 0 10px #000000;
+   -webkit-box-shadow: inset 0 0 10px #000000;
+   box-shadow:         inset 0 0 10px #000000;
+}
+
+.menucontainer .menu .header .btnnormal {
+  -webkit-box-shadow: 3px 3px 3px 3px #ccc;  /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+  -moz-box-shadow:    3px 3px 3px 3px #ccc;  /* Firefox 3.5 - 3.6 */
+  box-shadow: 3px 3px 3px 3px #ccc;
 }
 
 .menucontainer .menu .body {
@@ -1297,6 +1483,10 @@ svg .ippon {
   margin: 0 auto 0 auto;
   min-width: 30em;
   width: auto;
+}
+
+.menucontainer .menu .body .mdiv textarea {
+  resize: none;
 }
 
 .menucontainer .paction {
@@ -1355,6 +1545,25 @@ svg .ippon {
   border-color: black;
   font-size: large;
 }
+
+.menucontainer .menu .body .mdiv .eli_result_table {
+  background-color: white;
+  border-width: 1px;
+  border-spacing: 0px;
+  border-style: solid;
+  border-color: black;
+}
+
+.menucontainer .menu .body .mdiv .eli_result_table td,th {
+  text-align: center;
+  border-width: 1px;
+  border-spacing: 0px;
+  border-style: solid;
+  border-color: black;
+  font-size: large;
+}
+
+
 
 
 </style>
