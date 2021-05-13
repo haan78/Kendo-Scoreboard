@@ -396,8 +396,8 @@
             </p>
             <p>
               <a href="#" @click="dialog.menu = 'settings'">Settings</a>
-              
             </p>
+            <p>To switch to full screen mode, press F11</p>
           </div>
         </div>
 
